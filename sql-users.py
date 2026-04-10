@@ -17,7 +17,7 @@ def legg_til():
     print(f"\n {navn=} \n {tier=} \n {passord=}")
     y_n = input("stemmer dette(y/n): ")
 
-    if y_n == "y" or y_n == "yes" or == y_n == "ja":
+    if y_n == "y" or y_n == "yes" or y_n == "ja":
         print("lagrer info")
         cursor.execute("INSERT INTO users (username, passord, tier) VALUES (?, ?, ?)", (navn, passord, tier))
         connection.commit()
@@ -25,3 +25,5 @@ def legg_til():
     
     print("lagrer ikke info")
     return 0
+
+legg_til()
