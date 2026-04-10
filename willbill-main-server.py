@@ -50,8 +50,10 @@ def nav_tier(tier):
 def autherise(rec_user, rec_pass):
     data_return = cursor.execute("SELECT * FROM users")
 
+
     for data in data_return:
         if data[1] == rec_user and data[2] == rec_pass:
+            print(data)
             return data[3]
 
         
