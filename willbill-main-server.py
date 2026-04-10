@@ -34,7 +34,7 @@ def respond_html(self, html):
 
 def nav_tier(tier):
     if tier is None:
-        tier = 0
+        tier = 0    
 
     nav_items = [
         {"name": "Home", "url": "/home"},
@@ -177,6 +177,9 @@ class Handler(BaseHTTPRequestHandler):
             
             elif self.path == "/admin-services":
                 tier_routing(self, tier, 2, "Admin-Services-page.html", "Admin-Services", "Admin-Services")
+            
+            elif self.path == "/filserver":
+                tier_routing(self, tier, 2, "filserver.html", "Filserver", "Filserver")
                 
             
 
