@@ -39,10 +39,10 @@ def nav_tier(tier):
         {"name": "Portfolio", "url": "/portfolio"},
     ]  
 
-    if tier == 1: 
+    if tier >= 1: 
         nav_items.append({"name": "Services", "url": "/services"})
     
-    if tier == 2: 
+    if tier >= 2: 
         nav_items.append({"name": "Admin-Services", "url": "/admin-services"})
 
     return nav_items
