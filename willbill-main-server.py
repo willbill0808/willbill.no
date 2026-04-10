@@ -107,12 +107,12 @@ def authenticate(self, secret):
 
 def tier_routing(self, tier, min_tier, page, dis_name, doc_name):
     if tier >= min_tier:
-        template = env.get_template("Services-page.html")
-        html = template.render(nav_items=nav_tier(tier), dis_name="Services", doc_name="Services")
+        template = env.get_template(page)
+        html = template.render(nav_items=nav_tier(tier), dis_name=dis_name, doc_name=doc_name)
         respond_html(self, html)
     else:
-        template = env.get_template("Home-page.html")
-        html = template.render(nav_items=nav_tier(tier), dis_name="Home-Page", doc_name="Home")
+        template = env.get_template("not-auth.html")
+        html = template.render(nav_items=nav_tier(tier), dis_name="Un-Autherised", doc_name="Un-Autherised")
         respond_html(self, html)
 
 
