@@ -19,7 +19,7 @@ def legg_til():
 
     if y_n == "y" or y_n == "yes" or y_n == "ja":
         print("lagrer info")
-        cursor.execute("INSERT INTO users (username, passord, tier) VALUES (?, ?, ?)", (navn, passord, tier))
+        cursor.execute("INSERT INTO users (username, password, tier) VALUES (?, ?, ?)", (navn, passord, tier))
         connection.commit()
         return 0
     
