@@ -3,8 +3,7 @@ import sqlite3
 connection = sqlite3.connect("users.db")
 cursor = connection.cursor()
 
-cursor.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT UNIKE, password TEXT, tier INT)     INSERT INTO users (username, password, tier) VALUES (?, ?, ?)", ("guest","guestpass",0)")
-cursor.execute(")
+cursor.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT UNIKE, password TEXT, tier INT) INSERT INTO users (username, password, tier) VALUES (?, ?, ?)", ("guest","guestpass",0))
 connection.commit()
 
 for row in cursor.execute("SELECT * FROM users"):
