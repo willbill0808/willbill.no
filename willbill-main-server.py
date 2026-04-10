@@ -7,11 +7,13 @@ from dotenv import load_dotenv
 import jwt
 from datetime import datetime, timedelta, UTC
 from http.cookies import SimpleCookie
-
+import sqlite3
 
 load_dotenv() 
 secret = os.getenv("SECRET_KEY")
 
+connection = sqlite3.connect("users.db")
+cursor = connection.cursor()
 
 # Setup Jinja2
 env = Environment(loader=FileSystemLoader("templates"))
@@ -31,26 +33,28 @@ def respond_html(self, html):
     self.log_custom(200)
 
 def nav_tier(tier):
-    if tier == "friend":
-        return [
-            {"name": "Home", "url": "/home"},
-            {"name": "Log-inn", "url": "/log-inn"},
-            {"name": "Portfolio", "url": "/portfolio"},
-            {"name": "Services", "url": "/services"},
-        ]
-
-    return [
+    nav_items = [
         {"name": "Home", "url": "/home"},
         {"name": "Log-inn", "url": "/log-inn"},
         {"name": "Portfolio", "url": "/portfolio"},
     ]  
 
+    if tier == 1: 
+        nav_items.append({"name": "Services", "url": "/services"})
+    
+    if tier == 2: 
+        nav_items.append({"name": "Admin-Services", "url": "/admin-services"})
+
+    return nav_items
+
 def autherise(rec_user, rec_pass):
-    friend_user = os.getenv("USERNAME")
-    friend_pass = os.getenv("USERPASS")
-    friend_tier = os.getenv("USERTIER")
-    if rec_user == friend_user and rec_pass == friend_pass:
-        return friend_tier
+    data_return = cursor.execute("SELECT * FROM users")
+
+    for data in data_return:
+        if data[1] == rec_user and data[2] == rec_pass:
+            return data[3]
+
+        
 
 def authenticate(self, secret):
     cookie_header = self.headers.get("Cookie")
@@ -96,6 +100,17 @@ def authenticate(self, secret):
         )
         self.end_headers()
         return None
+
+def tier_routing(self, tier, min_tier, page, dis_name, doc_name):
+    if tier >= min_tier:
+        template = env.get_template("Services-page.html")
+        html = template.render(nav_items=nav_tier(tier), dis_name="Services", doc_name="Services")
+        respond_html(self, html)
+    else:
+        template = env.get_template("Home-page.html")
+        html = template.render(nav_items=nav_tier(tier), dis_name="Home-Page", doc_name="Home")
+        respond_html(self, html)
+
 
 class Handler(BaseHTTPRequestHandler):
 
@@ -148,14 +163,12 @@ class Handler(BaseHTTPRequestHandler):
                 respond_html(self, html)
 
             elif self.path == "/services":
-                if tier == "friend":
-                    template = env.get_template("Services-page.html")
-                    html = template.render(nav_items=nav_tier(tier), dis_name="Services", doc_name="Services")
-                    respond_html(self, html)
-                else:
-                    template = env.get_template("Home-page.html")
-                    html = template.render(nav_items=nav_tier(tier), dis_name="Home-Page", doc_name="Home")
-                    respond_html(self, html)
+                tier_routing(self, tier, 1, "Services-page.html", "Services", "Services")
+            
+            elif self.path == "/admin-services":
+                tier_routing(self, tier, 2, "Services-page.html", "Services", "Services")
+                
+            
 
             else:
                 self.send_response(404)
