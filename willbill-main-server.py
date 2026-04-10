@@ -170,7 +170,7 @@ class Handler(BaseHTTPRequestHandler):
                 tier_routing(self, tier, 1, "Services-page.html", "Services", "Services")
             
             elif self.path == "/admin-services":
-                tier_routing(self, tier, 2, "Services-page.html", "Services", "Services")
+                tier_routing(self, tier, 2, "Admin-Services-page.html", "Admin-Services", "Admin-Services")
                 
             
 

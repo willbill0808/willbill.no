@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ doc_name }}</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <h2>Menu</h2>
+
+            {% for item in nav_items %}
+            <a href="{{ item.url }}">
+                <button>{{ item.name }}</button>
+            </a>
+            {% endfor %}
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content">
+            <h1>{{ dis_name }}</h1>
+            <a href="/radar">
+                <button>radarr</button>
+            </a>
+            <a href="/sonar">
+                <button>sonarr</button>
+            </a>
+            <a href="/qtorrent">
+                <button>qtorrent</button>
+            </a>
+            
+
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>
