@@ -33,6 +33,9 @@ def respond_html(self, html):
     self.log_custom(200)
 
 def nav_tier(tier):
+    if tier is None:
+        tier = 0
+
     nav_items = [
         {"name": "Home", "url": "/home"},
         {"name": "Log-inn", "url": "/log-inn"},
@@ -108,7 +111,7 @@ def authenticate(self, secret):
 def tier_routing(self, tier, min_tier, page, dis_name, doc_name):
     if tier is None:
         tier = 0
-        
+
     if tier >= min_tier:
         template = env.get_template(page)
         html = template.render(nav_items=nav_tier(tier), dis_name=dis_name, doc_name=doc_name)
