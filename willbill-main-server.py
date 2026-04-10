@@ -106,6 +106,9 @@ def authenticate(self, secret):
         return None
 
 def tier_routing(self, tier, min_tier, page, dis_name, doc_name):
+    if tier is None:
+        tier = 0
+        
     if tier >= min_tier:
         template = env.get_template(page)
         html = template.render(nav_items=nav_tier(tier), dis_name=dis_name, doc_name=doc_name)
