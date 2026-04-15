@@ -8,6 +8,7 @@ import jwt
 from datetime import datetime, timedelta, UTC
 from http.cookies import SimpleCookie
 import sqlite3
+import mimetypes
 
 load_dotenv() 
 secret = os.getenv("SECRET_KEY")
@@ -142,18 +143,27 @@ class Handler(BaseHTTPRequestHandler):
         try:
             # Serve static files
             if self.path.startswith("/static/"):
+                """ print(self.path)
                 file_path = "." + self.path
+
                 if os.path.exists(file_path):
                     self.send_response(200)
-                    self.send_header("Content-Type", "text/css")
+
+                    mime_type, _ = mimetypes.guess_type(file_path)
+                    if mime_type is None:
+                        mime_type = "application/octet-stream"
+
+                    self.send_header("Content-Type", mime_type)
                     self.end_headers()
+
                     with open(file_path, "rb") as f:
                         self.wfile.write(f.read())
+
                     self.log_custom(200)
                 else:
                     self.send_response(404)
                     self.end_headers()
-                    self.log_custom(404)
+                    self.log_custom(404) """
                 return
 
             # Serve routes
