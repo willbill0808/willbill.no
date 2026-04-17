@@ -16,7 +16,7 @@
 
         {% for item in nav_items %}
             <a href="{{ item.url }}">
-                <button>{{ item.name }}</button>
+                <button id="{{ item.id }}">{{ item.name }}</button>
             </a>
         {% endfor %}
     </nav>

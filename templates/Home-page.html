@@ -6,6 +6,7 @@
     <title>{{ doc_name }}</title>
     <link rel="icon" type="image/png" href="/static/favicon.png">
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/home.css">
 </head>
 <body>
 
@@ -17,7 +18,7 @@
 
         {% for item in nav_items %}
             <a href="{{ item.url }}">
-                <button>{{ item.name }}</button>
+                <button id="{{ item.id }}">{{ item.name }}</button>
             </a>
         {% endfor %}
     </nav>
