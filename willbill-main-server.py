@@ -38,16 +38,16 @@ def nav_tier(tier):
         tier = 0    
 
     nav_items = [
-        {"name": "Home", "url": "/home"},
-        {"name": "Log-inn", "url": "/log-inn"},
-        {"name": "Portfolio", "url": "/portfolio"},
+        {"name": "Home", "url": "/home", "id": "home"},
+        {"name": "Log-inn", "url": "/log-inn", "id": "log-inn"},
+        {"name": "Portfolio", "url": "/portfolio", "id": "portfolio"},
     ]  
 
     if tier >= 1: 
-        nav_items.append({"name": "Services", "url": "/services"})
+        nav_items.append({"name": "Services", "url": "/services", "id": "services"})
     
     if tier >= 2: 
-        nav_items.append({"name": "Admin-Services", "url": "/admin-services"})
+        nav_items.append({"name": "Admin-Services", "url": "/admin-services", "id": "admin-services"})
 
     return nav_items
 
@@ -143,7 +143,7 @@ class Handler(BaseHTTPRequestHandler):
         try:
             # Serve static files
             if self.path.startswith("/static/"):
-                """ print(self.path)
+                print(self.path)
                 file_path = "." + self.path
 
                 if os.path.exists(file_path):
@@ -163,7 +163,7 @@ class Handler(BaseHTTPRequestHandler):
                 else:
                     self.send_response(404)
                     self.end_headers()
-                    self.log_custom(404) """
+                    self.log_custom(404)
                 return
 
             # Serve routes

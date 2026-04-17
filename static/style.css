@@ -11,7 +11,7 @@ body {
 /* Sidebar */
 .sidebar {
     width: 220px;
-    background-color: #107b3e;
+    background-color: #111;
     color: white;
     padding: 20px;
 }
@@ -42,5 +42,17 @@ body {
 .content {
     flex: 1;
     padding: 30px;
-    background-color: #000000;
+    background-color: #ebd4c5;
+}
+
+#home{
+    background-color: rgb(117, 147, 239);
+}
+
+#portfolio{
+    background-color: rgb(167, 115, 215);
+}
+
+#log-inn{
+    background-color: rgb(107, 199, 164);
 }
