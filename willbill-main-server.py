@@ -188,11 +188,11 @@ class Handler(BaseHTTPRequestHandler):
             elif self.path == "/Create-User":
                 tier_routing(self, tier, 0, "Create-User.html", "Create-User", "Lag-Bruker")
             
-
             else:
-                self.send_response(404)
+                """ self.send_response(404)
                 self.end_headers()
-                self.log_custom(404)
+                self.log_custom(404) """
+                tier_routing(self, tier, 0, "404.html", "404", "404")
 
         except Exception as e:
             self.send_response(500)
