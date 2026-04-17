@@ -173,6 +173,9 @@ class Handler(BaseHTTPRequestHandler):
             elif self.path == "/log-inn":
                 tier_routing(self, tier, 0, "Log-inn-page.html", "Log-inn", "Log inn")
             
+            elif self.path == "/Create-User":
+                tier_routing(self, tier, 0, "Create-User.html", "Create-User", "Lag-Bruker")
+            
             elif self.path == "/portfolio":
                 tier_routing(self, tier, 0, "Portfolio-page.html", "Portfolio", "Portfolio")
 
@@ -183,10 +186,7 @@ class Handler(BaseHTTPRequestHandler):
                 tier_routing(self, tier, 2, "Admin-Services-page.html", "Admin-Services", "Admin-Services")
             
             elif self.path == "/filserver":
-                tier_routing(self, tier, 2, "filserver.html", "Filserver", "Filserver")
-                
-            elif self.path == "/Create-User":
-                tier_routing(self, tier, 0, "Create-User.html", "Create-User", "Lag-Bruker")
+                tier_routing(self, tier, 2, "filserver.html", "Filserver", "Filserver")            
             
             else:
                 """ self.send_response(404)

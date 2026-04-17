@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ doc_name }}</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/Log-inn.css">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <h2>Menu</h2>
+
+        {% for item in nav_items %}
+            <a href="{{ item.url }}">
+                <button id="{{ item.id }}">{{ item.name }}</button>
+            </a>
+        {% endfor %}
+    </nav>
+
+    <!-- Main Content -->
+    <main class="content">
+        <h1>{{ dis_name }}</h1>
+
+        <form action="/make" method="post">
+            <input type="text" name="username" id="username">
+            <input type="password" name="password" id="password">
+            <input type="password" name="password2" id="password2">
+            <input type="submit" value="submit">
+        </form>
+
+        <a href="/Log-inn">
+            <button>Har bruker?</button>
+        </a>
+
+        
+    </main>
+
+</div>
+
+</body>
+</html>
