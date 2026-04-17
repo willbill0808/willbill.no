@@ -168,19 +168,13 @@ class Handler(BaseHTTPRequestHandler):
 
             # Serve routes
             if self.path == "/" or self.path == "/home":
-                template = env.get_template("Home-page.html")
-                html = template.render(nav_items=nav_tier(tier), dis_name="Home-Page", doc_name="Home")
-                respond_html(self, html)
+                tier_routing(self, tier, 0, "Home-page.html", "Home", "Home")
 
             elif self.path == "/log-inn":
-                template = env.get_template("Log-inn-page.html")
-                html = template.render(nav_items=nav_tier(tier), dis_name="Log-inn-Page", doc_name="Log inn")
-                respond_html(self, html)
+                tier_routing(self, tier, 0, "Log-inn-page.html", "Log-inn", "Log inn")
             
             elif self.path == "/portfolio":
-                template = env.get_template("Portfolio-page.html")
-                html = template.render(nav_items=nav_tier(tier), dis_name="Portfolio", doc_name="Portfolio")
-                respond_html(self, html)
+                tier_routing(self, tier, 0, "Portfolio-page.html", "Portfolio", "Portfolio")
 
             elif self.path == "/services":
                 tier_routing(self, tier, 1, "Services-page.html", "Services", "Services")
@@ -191,6 +185,8 @@ class Handler(BaseHTTPRequestHandler):
             elif self.path == "/filserver":
                 tier_routing(self, tier, 2, "filserver.html", "Filserver", "Filserver")
                 
+            elif self.path == "/Create-User":
+                tier_routing(self, tier, 0, "Create-User.html", "Create-User", "Lag-Bruker")
             
 
             else:
