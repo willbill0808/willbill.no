@@ -54,7 +54,6 @@ def nav_tier(tier):
 def autherise(rec_user, rec_pass):
     data_return = cursor.execute("SELECT * FROM users")
 
-
     for data in data_return:
         print(rec_user, rec_pass)
         print(data)
@@ -189,9 +188,6 @@ class Handler(BaseHTTPRequestHandler):
                 tier_routing(self, tier, 2, "filserver.html", "Filserver", "Filserver")            
             
             else:
-                """ self.send_response(404)
-                self.end_headers()
-                self.log_custom(404) """
                 tier_routing(self, tier, 0, "404.html", "404", "404")
 
         except Exception as e:
@@ -241,6 +237,25 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(html.encode())
                 self.log_custom(200)
+            
+            if self.path == "/make":
+                # Get content length
+                content_length = int(self.headers.get('Content-Length', 0))
+
+                # Read raw POST data
+                post_data = self.rfile.read(content_length).decode('utf-8')
+
+                # Parse form data
+                data = parse_qs(post_data)
+
+                # Extract values
+                username = data.get("username", [""])[0]
+                password = data.get("password", [""])[0]
+                password2 = data.get("password2", [""])[0]
+
+                print(username)
+                print(password)
+                print(password2)
 
 
         except Exception as e:
