@@ -1,0 +1,9 @@
+cffi==2.0.0
+cookies==2.2.1
+cryptography==46.0.7
+dotenv==0.9.9
+Jinja2==3.1.6
+MarkupSafe==3.0.3
+pycparser==3.0
+PyJWT==2.12.1
+python-dotenv==1.2.2
