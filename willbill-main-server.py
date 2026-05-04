@@ -8,6 +8,7 @@ import jwt
 from datetime import datetime, timedelta, UTC
 from http.cookies import SimpleCookie
 import sqlite3
+import bcrypt
 import mimetypes
 
 load_dotenv() 
@@ -173,7 +174,7 @@ class Handler(BaseHTTPRequestHandler):
                 tier_routing(self, tier, 0, "Log-inn-page.html", "Log-inn", "Log inn")
             
             elif self.path == "/Create-User":
-                tier_routing(self, tier, 0, "Create-User.html", "Create-User", "Lag-Bruker")
+                tier_routing(self, tier, 0, "Create-User.html", "Create-User", "Lag Bruker")
             
             elif self.path == "/portfolio":
                 tier_routing(self, tier, 0, "Portfolio-page.html", "Portfolio", "Portfolio")
@@ -256,6 +257,17 @@ class Handler(BaseHTTPRequestHandler):
                 print(username)
                 print(password)
                 print(password2)
+
+                # Respond to browser
+                template = env.get_template("Create-user.html")
+                html = template.render(nav_items=nav_tier(tier), dis_name="Create-User", doc_name="Lag Bruker")
+                
+                self.send_response(200)
+                if tier: self.send_header("Set-Cookie", f"jwt={token}; Path=/; HttpOnly")
+                self.send_header("Content-Type", "text/html") 
+                self.end_headers()
+                self.wfile.write(html.encode())
+                self.log_custom(200)
 
 
         except Exception as e:
