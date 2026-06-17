@@ -1,3 +1,4 @@
+
 :root {
     color-scheme: light;
     font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -78,34 +79,75 @@ button,
     gap: 0.85rem;
 }
 
+.sidebar a,
+.sidebar button,
 .nav-link {
     display: block;
     width: 100%;
     padding: 0.95rem 1.1rem;
     border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    background: rgba(255, 255, 255, 0.06);
+    border: none;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.08));
     color: #f6f0ff;
-    transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
+    text-align: center;
+    font-weight: 700;
+    box-shadow: 0 18px 35px rgba(16, 12, 74, 0.18);
+    transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
 }
 
+.sidebar a:hover,
+.sidebar button:hover,
 .nav-link:hover,
+.sidebar a:focus-visible,
+.sidebar button:focus-visible,
 .nav-link:focus-visible {
-    background: rgba(255, 255, 255, 0.12);
-    transform: translateX(2px);
+    transform: translateY(-1px);
+    box-shadow: 0 20px 40px rgba(16, 12, 74, 0.24);
     outline: none;
 }
 
-.nav-link.active {
-    background: #7e74ff;
-    border-color: rgba(126, 116, 255, 0.9);
-    color: #ffffff;
+button#home,
+.nav-link#home {
+    background: linear-gradient(135deg, #5f8bff 0%, #3e6bff 100%);
+}
+
+button#log-inn,
+.nav-link#log-inn {
+    background: linear-gradient(135deg, #00c9c9 0%, #2f8d94 100%);
+}
+
+button#portfolio,
+.nav-link#portfolio {
+    background: linear-gradient(135deg, #a74ebf 0%, #ed6cd5 100%);
+}
+
+button#services,
+.nav-link#services {
+    background: linear-gradient(135deg, #ff9f43 0%, #ff6f3b 100%);
+}
+
+button#admin-services,
+.nav-link#admin-services {
+    background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+}
+
+button#home:hover,
+.nav-link#home:hover,
+button#log-inn:hover,
+.nav-link#log-inn:hover,
+button#portfolio:hover,
+.nav-link#portfolio:hover,
+button#services:hover,
+.nav-link#services:hover,
+button#admin-services:hover,
+.nav-link#admin-services:hover {
+    filter: brightness(1.05);
 }
 
 .content {
     flex: 1;
     padding: 2rem;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 1.5rem;
     box-shadow: 0 24px 60px rgba(37, 21, 80, 0.08);
     display: flex;

@@ -15,8 +15,8 @@
         <h2>Menu</h2>
 
         {% for item in nav_items %}
-            <a href="{{ item.url }}">
-                <button id="{{ item.id }}">{{ item.name }}</button>
+            <a class="nav-link" id="{{ item.id }}" href="{{ item.url }}">
+                {{ item.name }}
             </a>
         {% endfor %}
     </nav>
