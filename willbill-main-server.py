@@ -295,7 +295,7 @@ class Handler(BaseHTTPRequestHandler):
             logging.exception("Unhandled exception:")
 
     def handle_filserver_request(self, request_path, tier, status_message=None):
-        if tier is None or tier < 0:
+        if tier is None or tier < 3:
             tier_routing(self, tier, 0, "not-auth.html", "Un-Autherised", "Un-Autherised")
             return
 
