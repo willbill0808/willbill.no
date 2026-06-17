@@ -15,19 +15,14 @@
 
         <!-- Sidebar -->
         <nav class="sidebar">
-            <div class="sidebar-top">
-                <h2>Navigation</h2>
-                <p class="sidebar-copy">Keep admin tools close at hand.</p>
-            </div>
+        <h2>Menu</h2>
 
-            <ul class="nav-list">
-                {% for item in nav_items %}
-                <li>
-                    <a class="nav-link" id="{{ item.id }}" href="{{ item.url }}">{{ item.name }}</a>
-                </li>
-                {% endfor %}
-            </ul>
-        </nav>
+        {% for item in nav_items %}
+            <a class="nav-link" id="{{ item.id }}" href="{{ item.url }}">
+                {{ item.name }}
+            </a>
+        {% endfor %}
+    </nav>
 
         <!-- Main Content -->
         <main class="content">
