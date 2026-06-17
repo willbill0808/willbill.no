@@ -375,7 +375,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def handle_filserver_post(self, request_path, tier):
         if tier is None or tier < 0:
-            tier_routing(self, tier, 0, "not-auth.html", "Un-Autherised", "Un-Autherised")
+            tier_routing(self, tier, 2, "not-auth.html", "Un-Autherised", "Un-Autherised")
             return
 
         content_length = int(self.headers.get('Content-Length', 0))
