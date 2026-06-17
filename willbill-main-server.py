@@ -411,7 +411,7 @@ class Handler(BaseHTTPRequestHandler):
         status_message = ""
 
         if action == "create_folder":
-            folder_name = form.getvalue("new_folder_name", "").strip()
+            folder_name = get_value("new_folder_name").strip()
             if not folder_name:
                 status_message = "Enter a valid folder name."
             else:
@@ -427,11 +427,11 @@ class Handler(BaseHTTPRequestHandler):
                         status_message = f"Folder '{folder_name}' created."
 
         elif action == "upload_file":
-            if "upload_file" not in form:
+            file_item = get_file("upload_file")
+            if not file_item:
                 status_message = "No file selected for upload."
             else:
-                file_item = form["upload_file"]
-                filename = os.path.basename(getattr(file_item, 'filename', '') or '')
+                filename = os.path.basename(file_item.get('filename', '') or '')
                 if not filename:
                     status_message = "No file selected for upload."
                 else:
@@ -442,10 +442,7 @@ class Handler(BaseHTTPRequestHandler):
                     else:
                         try:
                             with open(dest_path, "wb") as out_file:
-                                if hasattr(file_item, 'file'):
-                                    shutil.copyfileobj(file_item.file, out_file)
-                                else:
-                                    out_file.write(file_item.value)
+                                out_file.write(file_item.get('data', b""))
                             status_message = f"Uploaded '{filename}'."
                         except Exception:
                             status_message = "Upload failed. Please try again."
