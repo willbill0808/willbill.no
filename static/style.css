@@ -203,6 +203,31 @@ button#admin-services:hover,
     margin-top: 1.75rem;
 }
 
+.filserver-actions {
+    margin-bottom: 1rem;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.25rem;
+    border-radius: 1rem;
+    background: #eef2ff;
+    color: #1d4ed8;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1px solid rgba(59, 130, 246, 0.22);
+    transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.back-button:hover,
+.back-button:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(59, 130, 246, 0.12);
+    background: #e0e7ff;
+}
+
 .folder-list {
     display: grid;
     gap: 1rem;
@@ -217,18 +242,76 @@ button#admin-services:hover,
     background: rgba(245, 246, 252, 0.95);
     border: 1px solid rgba(99, 102, 241, 0.14);
     box-shadow: 0 16px 32px rgba(99, 102, 241, 0.08);
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.folder-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(59, 130, 246, 0.24);
+    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.16);
+    background: rgba(238, 242, 255, 0.95);
+}
+
+.folder-card,
+.folder-card .folder-preview-link,
+.folder-card .folder-name {
+    cursor: pointer;
+}
+
+.folder-card a {
+    color: inherit;
+}
+
+.folder-card.file-entry:hover .folder-name,
+.folder-card.file-entry:hover .folder-type {
+    color: #111827;
 }
 
 .folder-icon {
-    width: 46px;
-    height: 46px;
-    object-fit: contain;
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 0.85rem;
+    background: white;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.folder-preview-link {
+    display: block;
+    border-radius: 0.85rem;
+    overflow: hidden;
+}
+
+.folder-meta {
+    flex: 1;
+    min-width: 0;
 }
 
 .folder-name {
     font-size: 1rem;
     font-weight: 700;
     color: #1f1b3a;
+}
+
+.folder-type {
+    margin: 0.35rem 0 0;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.download-link {
+    padding: 0.75rem 1rem;
+    border-radius: 999px;
+    background: #2563eb;
+    color: white;
+    font-size: 0.9rem;
+    text-decoration: none;
+    box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18);
+}
+
+.download-link:hover,
+.download-link:focus-visible {
+    filter: brightness(1.05);
 }
 
 .empty-state {

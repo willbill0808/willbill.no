@@ -14,6 +14,8 @@ import mimetypes
 load_dotenv() 
 secret = os.getenv("SECRET_KEY")
 
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".svg"}
+
 connection = sqlite3.connect("users.db")
 cursor = connection.cursor()
 
@@ -64,6 +66,18 @@ def autherise(rec_user, rec_pass):
             return data[3]
 
         
+
+def first_image_in_dir(path):
+    if not os.path.isdir(path):
+        return None
+    for name in sorted(os.listdir(path)):
+        if name.startswith('.'):
+            continue
+        full_path = os.path.join(path, name)
+        if os.path.isfile(full_path) and os.path.splitext(name)[1].lower() in IMAGE_EXTENSIONS:
+            return name
+    return None
+
 
 def authenticate(self, secret):
     cookie_header = self.headers.get("Cookie")
@@ -233,16 +247,38 @@ class Handler(BaseHTTPRequestHandler):
                 full_path = os.path.join(abs_path, name)
                 entry_type = "directory" if os.path.isdir(full_path) else "file"
                 item_path = os.path.join(rel_path, name) if rel_path else name
+                url = "/filserver/" + quote(item_path.replace(os.sep, "/"))
+                preview = None
+                if entry_type == "directory":
+                    image_name = first_image_in_dir(full_path)
+                    if image_name:
+                        preview_path = os.path.join(item_path, image_name)
+                        preview = "/filserver/" + quote(preview_path.replace(os.sep, "/"))
+                else:
+                    ext = os.path.splitext(name)[1].lower()
+                    if ext in IMAGE_EXTENSIONS:
+                        preview = url
+
                 entries.append({
                     "name": name,
                     "type": entry_type,
-                    "url": "/filserver/" + quote(item_path.replace(os.sep, "/"))
+                    "url": url,
+                    "preview": preview
                 })
+
+            if rel_path:
+                parent_path = "/filserver"
+                parent_parts = rel_path.split("/")[:-1]
+                if parent_parts:
+                    parent_path = "/filserver/" + quote("/".join(parent_parts))
+            else:
+                parent_path = None
 
             extra = {
                 "entries": entries,
                 "current_folder": rel_path,
-                "path_parts": rel_path.split("/") if rel_path else []
+                "path_parts": rel_path.split("/") if rel_path else [],
+                "parent_path": parent_path
             }
             tier_routing(self, tier, 2, "filserver.html", "Filserver", "Filserver", extra=extra)
             return
