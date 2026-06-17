@@ -1,6 +1,6 @@
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, quote, unquote
 from jinja2 import Environment, FileSystemLoader
 import os
 from dotenv import load_dotenv
@@ -177,6 +177,10 @@ class Handler(BaseHTTPRequestHandler):
                 return
 
             # Serve routes
+            if self.path.startswith("/filserver"):
+                self.handle_filserver_request(self.path, tier)
+                return
+
             if self.path == "/" or self.path == "/home":
                 tier_routing(self, tier, 0, "Home-page.html", "Home", "Home")
 
@@ -195,16 +199,6 @@ class Handler(BaseHTTPRequestHandler):
             elif self.path == "/admin-services":
                 tier_routing(self, tier, 2, "Admin-Services-page.html", "Admin-Services", "Admin-Services")
             
-            elif self.path == "/filserver":
-                filserver_dir = os.path.join(os.getcwd(), "filserver")
-                folders = []
-                if os.path.isdir(filserver_dir):
-                    folders = sorted(
-                        [name for name in os.listdir(filserver_dir)
-                         if os.path.isdir(os.path.join(filserver_dir, name))]
-                    )
-                tier_routing(self, tier, 2, "filserver.html", "Filserver", "Filserver", extra={"folders": folders})            
-            
             else:
                 tier_routing(self, tier, 0, "404.html", "404", "404")
 
@@ -213,6 +207,62 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.log_custom(500)
             logging.exception("Unhandled exception:")
+
+    def handle_filserver_request(self, request_path, tier):
+        if tier is None or tier < 2:
+            tier_routing(self, tier, 0, "not-auth.html", "Un-Autherised", "Un-Autherised")
+            return
+
+        base_dir = os.path.join(os.getcwd(), "filserver")
+        rel_path = request_path[len("/filserver"):].lstrip("/")
+        rel_path = unquote(rel_path)
+        abs_path = os.path.normpath(os.path.join(base_dir, rel_path))
+        base_norm = os.path.normpath(base_dir)
+
+        if abs_path != base_norm and not abs_path.startswith(base_norm + os.sep):
+            self.send_response(404)
+            self.end_headers()
+            self.log_custom(404)
+            return
+
+        if os.path.isdir(abs_path):
+            entries = []
+            for name in sorted(os.listdir(abs_path)):
+                if name.startswith('.'):
+                    continue
+                full_path = os.path.join(abs_path, name)
+                entry_type = "directory" if os.path.isdir(full_path) else "file"
+                item_path = os.path.join(rel_path, name) if rel_path else name
+                entries.append({
+                    "name": name,
+                    "type": entry_type,
+                    "url": "/filserver/" + quote(item_path.replace(os.sep, "/"))
+                })
+
+            extra = {
+                "entries": entries,
+                "current_folder": rel_path,
+                "path_parts": rel_path.split("/") if rel_path else []
+            }
+            tier_routing(self, tier, 2, "filserver.html", "Filserver", "Filserver", extra=extra)
+            return
+
+        if os.path.isfile(abs_path):
+            if os.path.exists(abs_path):
+                self.send_response(200)
+                mime_type, _ = mimetypes.guess_type(abs_path)
+                if mime_type is None:
+                    mime_type = "application/octet-stream"
+                self.send_header("Content-Type", mime_type)
+                self.end_headers()
+                with open(abs_path, "rb") as f:
+                    self.wfile.write(f.read())
+                self.log_custom(200)
+                return
+
+        self.send_response(404)
+        self.end_headers()
+        self.log_custom(404)
     
     def do_POST(self):
         decoded = authenticate(self, secret)
