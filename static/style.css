@@ -212,31 +212,72 @@ button#admin-services:hover,
     gap: 1rem;
 }
 
-.filserver-actions-forms {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem;
+.filserver-actions.form-area {
+    margin-top: 2rem;
+    padding: 1.75rem;
+    border-radius: 1.5rem;
+    background: rgba(240, 246, 255, 0.95);
+    border: 1px solid rgba(59, 130, 246, 0.16);
 }
 
+.filserver-action-panel {
+    display: grid;
+    gap: 1rem;
+}
+
+.filserver-action-panel h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: #1e3a8a;
+}
+
+.filserver-action-panel p {
+    margin: 0;
+    color: #475569;
+    max-width: 64ch;
+}
+
+.filserver-actions-forms,
 .filserver-form {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem;
+    display: grid;
+    gap: 0.85rem;
 }
 
 .filserver-form input[type="text"],
 .filserver-form input[type="file"] {
-    min-width: 180px;
-    padding: 0.85rem 1rem;
+    width: 100%;
+    padding: 0.95rem 1rem;
     border-radius: 1rem;
     border: 1px solid rgba(148, 163, 184, 0.3);
-    background: #f8f7ff;
+    background: #ffffff;
 }
 
 .filserver-form button {
-    min-width: 120px;
+    width: 100%;
+    padding: 0.95rem 1rem;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, #4f46e5, #2563eb);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: transform 180ms ease, filter 180ms ease;
+}
+
+.filserver-form button:hover,
+.filserver-form button:focus-visible {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+}
+
+@media (min-width: 900px) {
+    .filserver-actions.form-area {
+        grid-template-columns: 1.2fr 0.8fr;
+        align-items: start;
+    }
+
+    .filserver-actions-forms {
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+    }
 }
 
 .status-message {

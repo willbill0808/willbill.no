@@ -33,38 +33,15 @@
             {% if current_folder %}
             <div class="filserver-actions">
                 <a class="back-button" href="{{ parent_path or '/filserver' }}">← Back</a>
-                <div class="filserver-actions-forms">
-                    <form class="filserver-form" action="/filserver" method="post" enctype="multipart/form-data">
-                        <input type="hidden" name="current_folder" value="{{ current_folder or '' }}">
-                        <input type="hidden" name="action" value="create_folder">
-                        <input type="text" name="new_folder_name" placeholder="New folder name" required>
-                        <button type="submit">Create folder</button>
-                    </form>
-                    <form class="filserver-form" action="/filserver" method="post" enctype="multipart/form-data">
-                        <input type="hidden" name="current_folder" value="{{ current_folder or '' }}">
-                        <input type="hidden" name="action" value="upload_file">
-                        <input type="file" name="upload_file" required>
-                        <button type="submit">Upload file</button>
-                    </form>
-                </div>
             </div>
-            {% else %}
-            <div class="filserver-actions">
-                <div class="filserver-actions-forms">
-                    <form class="filserver-form" action="/filserver" method="post" enctype="multipart/form-data">
-                        <input type="hidden" name="current_folder" value="">
-                        <input type="hidden" name="action" value="create_folder">
-                        <input type="text" name="new_folder_name" placeholder="New folder name" required>
-                        <button type="submit">Create folder</button>
-                    </form>
-                    <form class="filserver-form" action="/filserver" method="post" enctype="multipart/form-data">
-                        <input type="hidden" name="current_folder" value="">
-                        <input type="hidden" name="action" value="upload_file">
-                        <input type="file" name="upload_file" required>
-                        <button type="submit">Upload file</button>
-                    </form>
-                </div>
-            </div>
+            <nav class="breadcrumb">
+                <a href="/filserver">Home</a>
+                {% set path_accum = "" %}
+                {% for part in path_parts %}
+                    {% set path_accum = path_accum + '/' + part %}
+                    &nbsp;/&nbsp;<a href="/filserver{{ path_accum }}">{{ part }}</a>
+                {% endfor %}
+            </nav>
             {% endif %}
 
             {% if status_message %}
@@ -95,6 +72,25 @@
             {% else %}
             <p class="empty-state">No folders or files found in this location.</p>
             {% endif %}
+
+            <div class="filserver-actions form-area">
+                <div class="filserver-action-panel">
+                    <h2>Add to this folder</h2>
+                    <p>Use the controls below to create a folder or upload files into the current folder.</p>
+                    <form class="filserver-form" action="/filserver" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="current_folder" value="{{ current_folder or '' }}">
+                        <input type="hidden" name="action" value="create_folder">
+                        <input type="text" name="new_folder_name" placeholder="Enter folder name" required>
+                        <button type="submit">Create folder</button>
+                    </form>
+                    <form class="filserver-form" action="/filserver" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="current_folder" value="{{ current_folder or '' }}">
+                        <input type="hidden" name="action" value="upload_file">
+                        <input type="file" name="upload_file" required>
+                        <button type="submit">Upload file</button>
+                    </form>
+                </div>
+            </div>
         </section>
 
     </main>
