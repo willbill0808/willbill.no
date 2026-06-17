@@ -53,7 +53,7 @@ def nav_tier(tier):
     return nav_items
 
 def autherise(rec_user, rec_pass):
-    data_return = cursor.execute("SELECT * FROM users")
+    data_return = cursor.execute("SELECT * FROM users WHERE username=?", (rec_user,))
     print("data_return:", data_return)
 
     for data in data_return:

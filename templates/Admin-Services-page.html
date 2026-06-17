@@ -15,30 +15,51 @@
 
         <!-- Sidebar -->
         <nav class="sidebar">
-            <h2>Menu</h2>
+            <div class="sidebar-top">
+                <h2>Navigation</h2>
+                <p class="sidebar-copy">Keep admin tools close at hand.</p>
+            </div>
 
-            {% for item in nav_items %}
-            <a href="{{ item.url }}">
-                <button id="{{ item.id }}">{{ item.name }}</button>
-            </a>
-            {% endfor %}
+            <ul class="nav-list">
+                {% for item in nav_items %}
+                <li>
+                    <a class="nav-link" href="{{ item.url }}">{{ item.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
         </nav>
 
         <!-- Main Content -->
         <main class="content">
-            <h1>{{ dis_name }}</h1>
-            <a href="/radarr">
-                <button>radarr</button>
-            </a>
-            <a href="/sonarr">
-                <button>sonarr</button>
-            </a>
-            <a href="/qbittorrent">
-                <button>qtorrent</button>
-            </a>
-            
+            <section class="page-hero">
+                <p class="eyebrow">Admin services</p>
+                <h1>{{ dis_name }}</h1>
+                <p class="intro">Open server management tools and keep your downloads under control.</p>
+            </section>
 
-
+            <section class="services-grid">
+                <article class="service-card">
+                    <div>
+                        <h2>Radarr</h2>
+                        <p>Manage movie downloads and library automation.</p>
+                    </div>
+                    <a class="service-link" href="/radarr">Open Radarr</a>
+                </article>
+                <article class="service-card">
+                    <div>
+                        <h2>Sonarr</h2>
+                        <p>Track series releases and organize your TV content.</p>
+                    </div>
+                    <a class="service-link" href="/sonarr">Open Sonarr</a>
+                </article>
+                <article class="service-card">
+                    <div>
+                        <h2>qBittorrent</h2>
+                        <p>Control torrent activity and monitor download status.</p>
+                    </div>
+                    <a class="service-link" href="/qbittorrent">Open qBittorrent</a>
+                </article>
+            </section>
         </main>
 
     </div>

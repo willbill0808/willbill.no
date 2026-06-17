@@ -16,26 +16,44 @@
 
         <!-- Sidebar -->
         <nav class="sidebar">
-            <h2>Menu</h2>
+            <div class="sidebar-top">
+                <h2>Navigation</h2>
+                <p class="sidebar-copy">Quick access to all pages and services.</p>
+            </div>
 
-            {% for item in nav_items %}
-            <a href="{{ item.url }}">
-                <button id="{{ item.id }}">{{ item.name }}</button>
-            </a>
-            {% endfor %}
+            <ul class="nav-list">
+                {% for item in nav_items %}
+                <li>
+                    <a class="nav-link" href="{{ item.url }}">{{ item.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
         </nav>
 
         <!-- Main Content -->
         <main class="content">
-            <h1>{{ dis_name }}</h1>
-            <a href="/jellyfin">
-                <button>jellyfin</button>
-            </a>
-            <a href="/filserver">
-                <button>filserver</button>
-            </a>
+            <section class="page-hero">
+                <p class="eyebrow">Services</p>
+                <h1>{{ dis_name }}</h1>
+                <p class="intro">Manage your media tools and server services from one clean interface.</p>
+            </section>
 
-
+            <section class="services-grid">
+                <article class="service-card">
+                    <div>
+                        <h2>Jellyfin</h2>
+                        <p>Access your media library and play videos, music, and photos.</p>
+                    </div>
+                    <a class="service-link" href="/jellyfin">Open Jellyfin</a>
+                </article>
+                <article class="service-card">
+                    <div>
+                        <h2>Filserver</h2>
+                        <p>Browse and manage your shared files and documents.</p>
+                    </div>
+                    <a class="service-link" href="/filserver">Open Filserver</a>
+                </article>
+            </section>
         </main>
 
     </div>

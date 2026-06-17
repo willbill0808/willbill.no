@@ -1,3 +1,57 @@
-body{
-    background-color: rgb(237, 218, 255);
+.services-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    margin-top: 1.75rem;
+}
+
+.service-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.8rem;
+    background: linear-gradient(180deg, #ffffff 0%, #f6f3ff 100%);
+    border-radius: 1.5rem;
+    border: 1px solid rgba(123, 96, 255, 0.12);
+    box-shadow: 0 24px 40px rgba(135, 111, 255, 0.12);
+}
+
+.service-card h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    color: #1f1b3a;
+}
+
+.service-card p {
+    margin: 0;
+    color: #625f79;
+    line-height: 1.75;
+}
+
+.service-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: max-content;
+    padding: 0.95rem 1.4rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #7f72ff, #579cff);
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 16px 28px rgba(89, 83, 255, 0.18);
+    transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.service-link:hover,
+.service-link:focus-visible {
+    transform: translateY(-1px);
+    opacity: 0.96;
+    outline: none;
+}
+
+@media (max-width: 680px) {
+    .service-card {
+        padding: 1.3rem;
+    }
 }
