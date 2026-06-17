@@ -76,7 +76,7 @@ button,
     margin: 0;
     padding: 0;
     display: grid;
-    gap: 0.85rem;
+    gap: 1.1rem;
 }
 
 .sidebar a,
@@ -84,15 +84,17 @@ button,
 .nav-link {
     display: block;
     width: 100%;
-    padding: 0.95rem 1.1rem;
-    border-radius: 999px;
+    padding: 1.25rem 1.5rem;
+    border-radius: 1.5rem;
     border: none;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.08));
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.1));
     color: #f6f0ff;
     text-align: center;
     font-weight: 700;
-    box-shadow: 0 18px 35px rgba(16, 12, 74, 0.18);
-    transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+    font-size: 1rem;
+    letter-spacing: 0.01em;
+    box-shadow: 0 20px 40px rgba(16, 12, 74, 0.22);
+    transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease, filter 180ms ease;
 }
 
 .sidebar a:hover,
@@ -144,6 +146,53 @@ button#admin-services:hover,
     filter: brightness(1.05);
 }
 
+
+
+.content button,
+.content input[type=submit],
+.content .page-actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1.4rem;
+    border-radius: 1rem;
+    border: none;
+    color: white;
+    background: linear-gradient(135deg, #7f72ff, #579cff);
+    box-shadow: 0 18px 35px rgba(89, 83, 255, 0.18);
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 180ms ease, opacity 180ms ease, filter 180ms ease;
+}
+
+.content button:hover,
+.content input[type=submit]:hover,
+.content .page-actions a:hover {
+    transform: translateY(-1px);
+    opacity: 0.96;
+}
+
+.content input[type=text],
+.content input[type=password] {
+    width: 100%;
+    padding: 0.95rem 1rem;
+    border-radius: 1rem;
+    border: 1px solid #d4d0e0;
+    margin-bottom: 1rem;
+    background: #f8f7ff;
+}
+
+.page-hero {
+    display: grid;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.page-hero p {
+    margin: 0;
+    color: #5b5477;
+    max-width: 70ch;
+}
 .content {
     flex: 1;
     padding: 2rem;

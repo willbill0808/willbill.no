@@ -25,8 +25,10 @@
 
     <!-- Main Content -->
     <main class="content">
-        <h1>{{ dis_name }}</h1>
-
+        <div class="page-hero">
+            <h1>{{ dis_name }}</h1>
+            <p>Create a new account to access your dashboard and service pages.</p>
+        </div>
         <form action="/make" method="post">
             <input type="text" name="username" id="username">
             <input type="password" name="password" id="password">
