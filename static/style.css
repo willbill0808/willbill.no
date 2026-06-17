@@ -204,6 +204,11 @@ button#admin-services:hover,
     gap: 1.5rem;
 }
 
+.content.admin-services {
+    background: rgba(52, 211, 153, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.18);
+}
+
 .page-hero .eyebrow {
     margin: 0 0 0.75rem;
     color: #7d71ff;

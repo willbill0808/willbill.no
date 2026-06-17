@@ -50,6 +50,11 @@
     outline: none;
 }
 
+.content.services-page {
+    background: rgba(255, 159, 67, 0.12);
+    border: 1px solid rgba(255, 159, 67, 0.18);
+}
+
 @media (max-width: 680px) {
     .service-card {
         padding: 1.3rem;

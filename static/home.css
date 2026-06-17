@@ -2,5 +2,7 @@
 .content {
     flex: 1;
     padding: 30px;
-    background-color: royalblue;
+    background: rgba(95, 139, 255, 0.12);
+    border: 1px solid rgba(95, 139, 255, 0.18);
+    backdrop-filter: blur(8px);
 }
