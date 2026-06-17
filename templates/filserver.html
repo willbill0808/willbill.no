@@ -29,6 +29,21 @@
             <p>Access your file server and manage shared content directly from the dashboard.</p>
         </div>
 
+        <section class="folder-grid">
+            {% if folders %}
+            <div class="folder-list">
+                {% for folder in folders %}
+                <div class="folder-card">
+                    <img class="folder-icon" src="/static/folder.png" alt="Folder icon">
+                    <div class="folder-name">{{ folder }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="empty-state">No folders found in the filserver directory.</p>
+            {% endif %}
+        </section>
+
     </main>
 
 </div>

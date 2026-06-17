@@ -110,13 +110,20 @@ def authenticate(self, secret):
         self.end_headers()
         return None
 
-def tier_routing(self, tier, min_tier, page, dis_name, doc_name):
+def tier_routing(self, tier, min_tier, page, dis_name, doc_name, extra=None):
     if tier is None:
         tier = 0
 
     if tier >= min_tier:
         template = env.get_template(page)
-        html = template.render(nav_items=nav_tier(tier), dis_name=dis_name, doc_name=doc_name)
+        context = {
+            "nav_items": nav_tier(tier),
+            "dis_name": dis_name,
+            "doc_name": doc_name,
+        }
+        if extra:
+            context.update(extra)
+        html = template.render(**context)
         respond_html(self, html)
     else:
         template = env.get_template("not-auth.html")
@@ -189,7 +196,14 @@ class Handler(BaseHTTPRequestHandler):
                 tier_routing(self, tier, 2, "Admin-Services-page.html", "Admin-Services", "Admin-Services")
             
             elif self.path == "/filserver":
-                tier_routing(self, tier, 2, "filserver.html", "Filserver", "Filserver")            
+                filserver_dir = os.path.join(os.getcwd(), "filserver")
+                folders = []
+                if os.path.isdir(filserver_dir):
+                    folders = sorted(
+                        [name for name in os.listdir(filserver_dir)
+                         if os.path.isdir(os.path.join(filserver_dir, name))]
+                    )
+                tier_routing(self, tier, 2, "filserver.html", "Filserver", "Filserver", extra={"folders": folders})            
             
             else:
                 tier_routing(self, tier, 0, "404.html", "404", "404")

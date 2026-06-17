@@ -198,6 +198,44 @@ button#admin-services:hover,
     color: #5b5477;
     max-width: 70ch;
 }
+
+.folder-grid {
+    margin-top: 1.75rem;
+}
+
+.folder-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.folder-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: 1.25rem;
+    background: rgba(245, 246, 252, 0.95);
+    border: 1px solid rgba(99, 102, 241, 0.14);
+    box-shadow: 0 16px 32px rgba(99, 102, 241, 0.08);
+}
+
+.folder-icon {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+}
+
+.folder-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1f1b3a;
+}
+
+.empty-state {
+    color: #6b7280;
+    font-size: 1rem;
+}
+
 .content {
     flex: 1;
     padding: 2rem;
