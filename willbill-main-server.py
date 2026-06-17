@@ -12,10 +12,12 @@ import sqlite3
 import bcrypt
 import mimetypes
 
-load_dotenv() 
-secret = os.getenv("SECRET_KEY")
+load_dotenv()
+secret = os.getenv("SECRET_KEY", "change-me")
 
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".svg"}
+FILSERVER_DIR = os.path.join(os.getcwd(), "filserver")
+os.makedirs(FILSERVER_DIR, exist_ok=True)
 
 connection = sqlite3.connect("users.db")
 cursor = connection.cursor()
@@ -56,15 +58,19 @@ def nav_tier(tier):
     return nav_items
 
 def autherise(rec_user, rec_pass):
-    data_return = cursor.execute("SELECT * FROM users WHERE username=?", (rec_user,))
-    print("data_return:", data_return)
+    cursor.execute("SELECT username, password, tier FROM users WHERE username=?", (rec_user,))
+    row = cursor.fetchone()
+    if not row:
+        return None
 
-    for data in data_return:
-        print(rec_user, rec_pass)
-        print(data)
-        if data[1] == rec_user and data[2] == rec_pass:
-            print(data)
-            return data[3]
+    stored_username, stored_password, stored_tier = row
+    if stored_password.startswith("$2b$") or stored_password.startswith("$2y$"):
+        if bcrypt.checkpw(rec_pass.encode("utf-8"), stored_password.encode("utf-8")):
+            return stored_tier
+    elif stored_password == rec_pass:
+        return stored_tier
+
+    return None
 
         
 
@@ -166,34 +172,13 @@ def authenticate(self, secret):
         return None
 
     try:
-        # Validate JWT
         decoded = jwt.decode(
             token.value,
             secret,
             algorithms=["HS256"]
         )
         return decoded
-
-    except jwt.ExpiredSignatureError:
-        
-        self.send_response(302)
-        self.send_header("Location", "/login")
-        self.send_header(
-            "Set-Cookie",
-            "jwt=; Path=/; Max-Age=0"
-        )
-        self.end_headers()
-        return None
-
-    except jwt.InvalidTokenError:
-        
-        self.send_response(302)
-        self.send_header("Location", "/login")
-        self.send_header(
-            "Set-Cookie",
-            "jwt=; Path=/; Max-Age=0"
-        )
-        self.end_headers()
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         return None
 
 def tier_routing(self, tier, min_tier, page, dis_name, doc_name, extra=None):
@@ -295,11 +280,10 @@ class Handler(BaseHTTPRequestHandler):
             logging.exception("Unhandled exception:")
 
     def handle_filserver_request(self, request_path, tier, status_message=None):
-        if tier is None or tier < 3:
-            tier_routing(self, tier, 0, "not-auth.html", "Un-Autherised", "Un-Autherised")
-            return
+        if tier is None:
+            tier = 0
 
-        base_dir = os.path.join(os.getcwd(), "filserver")
+        base_dir = FILSERVER_DIR
         rel_path = request_path[len("/filserver"):].lstrip("/")
         rel_path = unquote(rel_path)
         abs_path = os.path.normpath(os.path.join(base_dir, rel_path))
@@ -347,36 +331,35 @@ class Handler(BaseHTTPRequestHandler):
                 parent_path = None
 
             extra = {
+                "tier": tier,
                 "entries": entries,
                 "current_folder": rel_path,
                 "path_parts": rel_path.split("/") if rel_path else [],
                 "parent_path": parent_path,
                 "status_message": status_message
             }
-            tier_routing(self, tier, 2, "filserver.html", "Filserver", "Filserver", extra=extra)
+            tier_routing(self, tier, 0, "filserver.html", "Filserver", "Filserver", extra=extra)
             return
 
         if os.path.isfile(abs_path):
-            if os.path.exists(abs_path):
-                self.send_response(200)
-                mime_type, _ = mimetypes.guess_type(abs_path)
-                if mime_type is None:
-                    mime_type = "application/octet-stream"
-                self.send_header("Content-Type", mime_type)
-                self.end_headers()
-                with open(abs_path, "rb") as f:
-                    self.wfile.write(f.read())
-                self.log_custom(200)
-                return
+            self.send_response(200)
+            mime_type, _ = mimetypes.guess_type(abs_path)
+            if mime_type is None:
+                mime_type = "application/octet-stream"
+            self.send_header("Content-Type", mime_type)
+            self.end_headers()
+            with open(abs_path, "rb") as f:
+                self.wfile.write(f.read())
+            self.log_custom(200)
+            return
 
         self.send_response(404)
         self.end_headers()
         self.log_custom(404)
 
     def handle_filserver_post(self, request_path, tier):
-        if tier is None or tier < 0:
-            tier_routing(self, tier, 2, "not-auth.html", "Un-Autherised", "Un-Autherised")
-            return
+        if tier is None:
+            tier = 0
 
         content_length = int(self.headers.get('Content-Length', 0))
         body_bytes = self.rfile.read(content_length)
@@ -398,7 +381,7 @@ class Handler(BaseHTTPRequestHandler):
         current_folder = get_value("current_folder") or ""
         rel_path = current_folder.strip("/")
 
-        base_dir = os.path.join(os.getcwd(), "filserver")
+        base_dir = FILSERVER_DIR
         base_norm = os.path.normpath(base_dir)
         target_dir = os.path.normpath(os.path.join(base_dir, rel_path))
 
@@ -493,31 +476,41 @@ class Handler(BaseHTTPRequestHandler):
                 self.log_custom(200)
 
             elif self.path == "/make":
-                # Get content length
                 content_length = int(self.headers.get('Content-Length', 0))
-
-                # Read raw POST data
                 post_data = self.rfile.read(content_length).decode('utf-8')
-
-                # Parse form data
                 data = parse_qs(post_data)
 
-                # Extract values
-                username = data.get("username", [""])[0]
+                username = data.get("username", [""])[0].strip()
                 password = data.get("password", [""])[0]
                 password2 = data.get("password2", [""])[0]
 
-                print(username)
-                print(password)
-                print(password2)
+                status_message = ""
+                if not username or not password:
+                    status_message = "Username and password are required."
+                elif password != password2:
+                    status_message = "Passwords do not match."
+                else:
+                    try:
+                        password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+                        cursor.execute(
+                            "INSERT INTO users (username, password, tier) VALUES (?, ?, ?)",
+                            (username, password_hash, 0)
+                        )
+                        connection.commit()
+                        status_message = "Account created successfully. Please log in."
+                    except sqlite3.IntegrityError:
+                        status_message = "That username is already taken."
 
-                # Respond to browser
-                template = env.get_template("Create-user.html")
-                html = template.render(nav_items=nav_tier(tier), dis_name="Create-User", doc_name="Lag Bruker")
-                
+                template = env.get_template("Create-User.html")
+                html = template.render(
+                    nav_items=nav_tier(tier),
+                    dis_name="Create-User",
+                    doc_name="Lag Bruker",
+                    status_message=status_message
+                )
+
                 self.send_response(200)
-                if tier: self.send_header("Set-Cookie", f"jwt={token}; Path=/; HttpOnly")
-                self.send_header("Content-Type", "text/html") 
+                self.send_header("Content-Type", "text/html")
                 self.end_headers()
                 self.wfile.write(html.encode())
                 self.log_custom(200)
