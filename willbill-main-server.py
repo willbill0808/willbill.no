@@ -1,8 +1,10 @@
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from urllib.parse import parse_qs, quote, unquote
+from urllib.parse import parse_qs, quote, unquote, urlparse
 from jinja2 import Environment, FileSystemLoader
 import os
+import cgi
+import shutil
 from dotenv import load_dotenv
 import jwt
 from datetime import datetime, timedelta, UTC
@@ -222,7 +224,7 @@ class Handler(BaseHTTPRequestHandler):
             self.log_custom(500)
             logging.exception("Unhandled exception:")
 
-    def handle_filserver_request(self, request_path, tier):
+    def handle_filserver_request(self, request_path, tier, status_message=None):
         if tier is None or tier < 2:
             tier_routing(self, tier, 0, "not-auth.html", "Un-Autherised", "Un-Autherised")
             return
@@ -278,7 +280,8 @@ class Handler(BaseHTTPRequestHandler):
                 "entries": entries,
                 "current_folder": rel_path,
                 "path_parts": rel_path.split("/") if rel_path else [],
-                "parent_path": parent_path
+                "parent_path": parent_path,
+                "status_message": status_message
             }
             tier_routing(self, tier, 2, "filserver.html", "Filserver", "Filserver", extra=extra)
             return
@@ -299,7 +302,83 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(404)
         self.end_headers()
         self.log_custom(404)
-    
+
+    def handle_filserver_post(self, request_path, tier):
+        if tier is None or tier < 2:
+            tier_routing(self, tier, 0, "not-auth.html", "Un-Autherised", "Un-Autherised")
+            return
+
+        form = cgi.FieldStorage(
+            fp=self.rfile,
+            headers=self.headers,
+            environ={
+                'REQUEST_METHOD': 'POST',
+                'CONTENT_TYPE': self.headers.get('Content-Type', '')
+            }
+        )
+
+        action = form.getvalue("action", "")
+        current_folder = form.getvalue("current_folder", "") or ""
+        rel_path = current_folder.strip("/")
+
+        base_dir = os.path.join(os.getcwd(), "filserver")
+        base_norm = os.path.normpath(base_dir)
+        target_dir = os.path.normpath(os.path.join(base_dir, rel_path))
+
+        if target_dir != base_norm and not target_dir.startswith(base_norm + os.sep):
+            self.send_response(400)
+            self.end_headers()
+            self.log_custom(400)
+            return
+
+        status_message = ""
+
+        if action == "create_folder":
+            folder_name = form.getvalue("new_folder_name", "").strip()
+            if not folder_name:
+                status_message = "Enter a valid folder name."
+            else:
+                folder_name = os.path.basename(folder_name)
+                if folder_name in {"", ".", ".."} or os.sep in folder_name or "/" in folder_name:
+                    status_message = "Folder name may not include slashes."
+                else:
+                    new_folder_path = os.path.join(target_dir, folder_name)
+                    if os.path.exists(new_folder_path):
+                        status_message = f"Folder '{folder_name}' already exists."
+                    else:
+                        os.makedirs(new_folder_path, exist_ok=True)
+                        status_message = f"Folder '{folder_name}' created."
+
+        elif action == "upload_file":
+            if "upload_file" not in form:
+                status_message = "No file selected for upload."
+            else:
+                file_item = form["upload_file"]
+                filename = os.path.basename(getattr(file_item, 'filename', '') or '')
+                if not filename:
+                    status_message = "No file selected for upload."
+                else:
+                    filename = filename.replace('/', '_').replace('\\', '_')
+                    dest_path = os.path.normpath(os.path.join(target_dir, filename))
+                    if dest_path != base_norm and not dest_path.startswith(base_norm + os.sep):
+                        status_message = "Invalid upload path."
+                    else:
+                        try:
+                            with open(dest_path, "wb") as out_file:
+                                if hasattr(file_item, 'file'):
+                                    shutil.copyfileobj(file_item.file, out_file)
+                                else:
+                                    out_file.write(file_item.value)
+                            status_message = f"Uploaded '{filename}'."
+                        except Exception:
+                            status_message = "Upload failed. Please try again."
+
+        else:
+            status_message = "Unknown filserver action."
+
+        request_path = "/filserver/" + quote(rel_path) if rel_path else "/filserver"
+        self.handle_filserver_request(request_path, tier, status_message=status_message)
+
     def do_POST(self):
         decoded = authenticate(self, secret)
 
@@ -319,8 +398,6 @@ class Handler(BaseHTTPRequestHandler):
                 username = data.get("username", [""])[0]
                 password = data.get("password", [""])[0]
 
-                # Print to console
-
                 tier = autherise(username, password)
 
                 if tier:
@@ -331,7 +408,6 @@ class Handler(BaseHTTPRequestHandler):
                     }
                     token = jwt.encode(payload, secret, algorithm="HS256")
 
-                # Respond to browser
                 template = env.get_template("Log-inn-page.html")
                 html = template.render(nav_items=nav_tier(tier), dis_name="Log-inn-Page", doc_name="Log inn")
                 
@@ -341,8 +417,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(html.encode())
                 self.log_custom(200)
-            
-            if self.path == "/make":
+
+            elif self.path == "/make":
                 # Get content length
                 content_length = int(self.headers.get('Content-Length', 0))
 
@@ -372,6 +448,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.wfile.write(html.encode())
                 self.log_custom(200)
 
+            elif self.path.startswith("/filserver"):
+                self.handle_filserver_post(self.path, tier)
 
         except Exception as e:
             self.send_response(500)

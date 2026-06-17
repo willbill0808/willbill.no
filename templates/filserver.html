@@ -33,32 +33,59 @@
             {% if current_folder %}
             <div class="filserver-actions">
                 <a class="back-button" href="{{ parent_path or '/filserver' }}">← Back</a>
+                <div class="filserver-actions-forms">
+                    <form class="filserver-form" action="/filserver" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="current_folder" value="{{ current_folder or '' }}">
+                        <input type="hidden" name="action" value="create_folder">
+                        <input type="text" name="new_folder_name" placeholder="New folder name" required>
+                        <button type="submit">Create folder</button>
+                    </form>
+                    <form class="filserver-form" action="/filserver" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="current_folder" value="{{ current_folder or '' }}">
+                        <input type="hidden" name="action" value="upload_file">
+                        <input type="file" name="upload_file" required>
+                        <button type="submit">Upload file</button>
+                    </form>
+                </div>
             </div>
-            <nav class="breadcrumb">
-                <a href="/filserver">Home</a>
-                {% set path_accum = "" %}
-                {% for part in path_parts %}
-                    {% set path_accum = path_accum + '/' + part %}
-                    &nbsp;/&nbsp;<a href="/filserver{{ path_accum }}">{{ part }}</a>
-                {% endfor %}
-            </nav>
+            {% else %}
+            <div class="filserver-actions">
+                <div class="filserver-actions-forms">
+                    <form class="filserver-form" action="/filserver" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="current_folder" value="">
+                        <input type="hidden" name="action" value="create_folder">
+                        <input type="text" name="new_folder_name" placeholder="New folder name" required>
+                        <button type="submit">Create folder</button>
+                    </form>
+                    <form class="filserver-form" action="/filserver" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="current_folder" value="">
+                        <input type="hidden" name="action" value="upload_file">
+                        <input type="file" name="upload_file" required>
+                        <button type="submit">Upload file</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if status_message %}
+            <div class="status-message">{{ status_message }}</div>
             {% endif %}
 
             {% if entries %}
             <div class="folder-list">
                 {% for item in entries %}
                 <div class="folder-card {{ 'file-entry' if item.type == 'file' else '' }}">
-                    <a class="folder-preview-link" href="{{ item.url }}">
+                    <a class="folder-card-link" href="{{ item.url }}">
                         {% if item.preview %}
                         <img class="folder-icon" src="{{ item.preview }}" alt="{{ item.type }} preview">
                         {% else %}
                         <img class="folder-icon" src="/static/folder.png" alt="{{ item.type }} icon">
                         {% endif %}
+                        <div class="folder-meta">
+                            <span class="folder-name">{{ item.name }}</span>
+                            <p class="folder-type">{{ item.type }}</p>
+                        </div>
                     </a>
-                    <div class="folder-meta">
-                        <a class="folder-name" href="{{ item.url }}">{{ item.name }}</a>
-                        <p class="folder-type">{{ item.type }}</p>
-                    </div>
                     {% if item.type == 'file' %}
                     <a class="download-link" href="{{ item.url }}" download>Download</a>
                     {% endif %}
