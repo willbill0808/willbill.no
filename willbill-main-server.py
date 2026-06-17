@@ -1,9 +1,8 @@
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from urllib.parse import parse_qs, quote, unquote, urlparse
+from urllib.parse import parse_qs, quote, unquote
 from jinja2 import Environment, FileSystemLoader
 import os
-import cgi
 import shutil
 from dotenv import load_dotenv
 import jwt
@@ -79,6 +78,77 @@ def first_image_in_dir(path):
         if os.path.isfile(full_path) and os.path.splitext(name)[1].lower() in IMAGE_EXTENSIONS:
             return name
     return None
+
+
+def parse_content_disposition(value):
+    items = {}
+    for part in value.split(";"):
+        part = part.strip()
+        if "=" in part:
+            key, val = part.split("=", 1)
+            val = val.strip()
+            if val.startswith('"') and val.endswith('"'):
+                val = val[1:-1]
+            items[key.strip().lower()] = val
+        else:
+            items[part.lower()] = None
+    return items
+
+
+def parse_multipart_form_data(content_type, body_bytes):
+    if "multipart/form-data" not in content_type:
+        return []
+
+    boundary = None
+    for part in content_type.split(";"):
+        part = part.strip()
+        if part.startswith("boundary="):
+            boundary = part.split("=", 1)[1]
+            if boundary.startswith('"') and boundary.endswith('"'):
+                boundary = boundary[1:-1]
+            break
+
+    if not boundary:
+        return []
+
+    boundary_bytes = ("--" + boundary).encode("utf-8")
+    sections = body_bytes.split(boundary_bytes)
+    fields = []
+
+    for section in sections:
+        section = section.strip(b"\r\n")
+        if not section or section == b"--":
+            continue
+
+        header_block, sep, value = section.partition(b"\r\n\r\n")
+        if not sep:
+            continue
+
+        header_lines = header_block.split(b"\r\n")
+        headers = {}
+        for line in header_lines:
+            if b":" not in line:
+                continue
+            key, val = line.split(b":", 1)
+            headers[key.decode("utf-8").strip().lower()] = val.decode("utf-8", errors="replace").strip()
+
+        disposition = headers.get("content-disposition", "")
+        disposition_params = parse_content_disposition(disposition)
+        field_name = disposition_params.get("name")
+        filename = disposition_params.get("filename")
+        content_type = headers.get("content-type")
+
+        if value.endswith(b"\r\n"):
+            value = value[:-2]
+
+        fields.append({
+            "name": field_name,
+            "filename": filename,
+            "content_type": content_type,
+            "data": value,
+        })
+
+    return fields
 
 
 def authenticate(self, secret):
@@ -308,17 +378,24 @@ class Handler(BaseHTTPRequestHandler):
             tier_routing(self, tier, 0, "not-auth.html", "Un-Autherised", "Un-Autherised")
             return
 
-        form = cgi.FieldStorage(
-            fp=self.rfile,
-            headers=self.headers,
-            environ={
-                'REQUEST_METHOD': 'POST',
-                'CONTENT_TYPE': self.headers.get('Content-Type', '')
-            }
-        )
+        content_length = int(self.headers.get('Content-Length', 0))
+        body_bytes = self.rfile.read(content_length)
+        fields = parse_multipart_form_data(self.headers.get('Content-Type', ''), body_bytes)
 
-        action = form.getvalue("action", "")
-        current_folder = form.getvalue("current_folder", "") or ""
+        def get_value(name):
+            for field in fields:
+                if field.get('name') == name and field.get('filename') is None:
+                    return field.get('data', b"").decode('utf-8', errors='replace')
+            return ""
+
+        def get_file(name):
+            for field in fields:
+                if field.get('name') == name and field.get('filename'):
+                    return field
+            return None
+
+        action = get_value("action")
+        current_folder = get_value("current_folder") or ""
         rel_path = current_folder.strip("/")
 
         base_dir = os.path.join(os.getcwd(), "filserver")
