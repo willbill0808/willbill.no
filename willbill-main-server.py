@@ -374,7 +374,7 @@ class Handler(BaseHTTPRequestHandler):
         self.log_custom(404)
 
     def handle_filserver_post(self, request_path, tier):
-        if tier is None or tier < 2:
+        if tier is None or tier < 0:
             tier_routing(self, tier, 0, "not-auth.html", "Un-Autherised", "Un-Autherised")
             return
 
