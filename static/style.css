@@ -130,7 +130,7 @@ button#services,
 
 button#admin-services,
 .nav-link#admin-services {
-    background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+    background: linear-gradient(135deg, #1f3568 0%, #2b4b94 100%);
 }
 
 button#home:hover,
@@ -144,6 +144,11 @@ button#services:hover,
 button#admin-services:hover,
 .nav-link#admin-services:hover {
     filter: brightness(1.05);
+}
+
+.content.admin-services {
+    background: rgba(58, 81, 134, 0.12);
+    border: 1px solid rgba(58, 81, 134, 0.18);
 }
 
 
