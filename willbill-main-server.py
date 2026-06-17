@@ -44,7 +44,7 @@ def nav_tier(tier):
         {"name": "Portfolio", "url": "/portfolio", "id": "portfolio"},
     ]  
 
-    if tier >= 0: 
+    if tier >= 1: 
         nav_items.append({"name": "Services", "url": "/services", "id": "services"})
     
     if tier >= 2: 
@@ -138,6 +138,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         decoded = authenticate(self, secret)
+
+        print(decoded)
 
         tier = decoded.get("tier") if decoded else None
         try:
